@@ -50,33 +50,60 @@ module.exports = function(app)
         });
     });
     app.get('/delete/:id', function (req,res) {
-        connection.query('DELETE FROM user WHERE id = ?',[req.params.id],
-            function (err, result) {
-                if (err) {
-                    console.log('delete Error');
-                } else {
-                    console.log('delete id = %d', req.params.id);
-                    res.redirect('/view');
-                }
+        connection.query('DELETE FROM user WHERE id = ?',[req.params.id], function (err, result) {
+            if (err) {
+                console.log('Error while performing query.',err)
+            } else {
+                console.log('delete id = %d', req.params.id);
+                res.redirect('/list');
             }
-        )
+        })
     })
     app.get('/control/control1', function (req,res) {
-        /*
-        connection.query('DELETE FROM user WHERE id = ?',[req.params.id],
-            function (err, result) {
-                if (err) {
-                    console.log('delete Error');
-                } else {
-                    console.log('delete id = %d', req.params.id);
-                    res.redirect('/view');
-                }
+        connection.query('ALTER TABLE user AUTO_INCREMENT=1;', function(err,rows){
+            if(err)
+                console.log('Error while performing query.',err)
+            else {
+                console.log('ID 재정렬 step1')
+
+                connection.query('SET @COUNT = 0;', function(err,rows){
+                    if(err)
+                        console.log('Error while performing query.',err)
+                    else {
+                        console.log('ID 재정렬 step2')
+
+                        connection.query('UPDATE user SET id = @COUNT:=@COUNT+1;', function(err,rows){
+                            if(err)
+                                console.log('Error while performing query.',err)
+                            else {
+                                console.log('ID 재정렬 step3')
+                                res.redirect('/')
+                            }
+                        })
+                    }
+                })
             }
-        )
-        */
-        console.log('ID 재정렬')
+        })
     })
     app.get('/control/control2', function (req,res) {
+        connection.query('UPDATE user SET partner = 0', function(err,rows){
+            if(err)
+                console.log('Error while performing query.',err)
+            else {
+                console.log('파트너 삭제 step1')
+
+                connection.query('UPDATE user SET matched = 0', function(err,rows){
+                    if(err)
+                        console.log('Error while performing query.',err)
+                    else {
+                        console.log('파트너 삭제 step2')
+                        res.redirect('/')
+                    }
+                })
+            }
+        })
+    })
+    app.get('/control/control3', function (req,res) {
         console.log('파트너 매칭')
     })
 }
