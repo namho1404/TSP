@@ -14,13 +14,23 @@ module.exports = function(app)
 {
     app.use(bodyParser.urlencoded({ extended: false}));
     app.get('/',function(req,res){
-        console.log("home page");
         res.render('index.html')
     });
     app.get('/add',function(req,res){
-        console.log("add page");
         res.render('add.html')
     });
+    app.get('/control',function(req,res){
+        res.render('control.html')
+    });
+    app.get('/list',function(req,res){
+        connection.query('SELECT * from user', function(err,rows){
+            if(!err){
+                res.render('list.ejs',{data:rows})}
+            else
+                console.log('Error while performing query.',err)
+        });
+    });
+
     app.post('/add', function (req,res) {
         var name = req.body.name
         var age = req.body.age
@@ -39,15 +49,6 @@ module.exports = function(app)
             res.redirect('/');
         });
     });
-    app.get('/view',function(req,res){
-        connection.query('SELECT * from user', function(err,rows){
-            if(!err){
-                console.log("view page");
-                res.render('view.ejs',{data:rows})}
-            else
-                console.log('Error while performing query.',err)
-        });
-    });
     app.get('/delete/:id', function (req,res) {
         connection.query('DELETE FROM user WHERE id = ?',[req.params.id],
             function (err, result) {
@@ -59,5 +60,23 @@ module.exports = function(app)
                 }
             }
         )
+    })
+    app.get('/control/control1', function (req,res) {
+        /*
+        connection.query('DELETE FROM user WHERE id = ?',[req.params.id],
+            function (err, result) {
+                if (err) {
+                    console.log('delete Error');
+                } else {
+                    console.log('delete id = %d', req.params.id);
+                    res.redirect('/view');
+                }
+            }
+        )
+        */
+        console.log('ID 재정렬')
+    })
+    app.get('/control/control2', function (req,res) {
+        console.log('파트너 매칭')
     })
 }

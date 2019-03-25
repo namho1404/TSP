@@ -11,4 +11,3 @@ var server = app.listen(8888, function(){
 })
 
 app.use('/static', express.static(__dirname + '/public'));
-
