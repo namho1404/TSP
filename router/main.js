@@ -21,7 +21,7 @@ module.exports = function(app)
         console.log("add page");
         res.render('add.html')
     });
-    app.post('/add', function (req, res) {
+    app.post('/add', function (req,res) {
         var name = req.body.name
         var age = req.body.age
         var gendor = req.body.gendor
@@ -48,4 +48,16 @@ module.exports = function(app)
                 console.log('Error while performing query.',err)
         });
     });
+    app.get('/delete/:id', function (req,res) {
+        connection.query('DELETE FROM user WHERE id = ?',[req.params.id],
+            function (err, result) {
+                if (err) {
+                    console.log('delete Error');
+                } else {
+                    console.log('delete id = %d', req.params.id);
+                    res.redirect('/view');
+                }
+            }
+        )
+    })
 }

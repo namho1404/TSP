@@ -22,6 +22,7 @@
             <th>Matched</th>
             <th>Partner</th>
             <th>Phone</th>
+            <th>Delete</th>
         </tr>
         <% data.forEach(function(item, index){ %>
         <tr>
@@ -34,6 +35,7 @@
             <td><%= item.matched%></td>
             <td><%= item.partner%></td>
             <td><%= item.phone%></td>
+            <td><a href="/delete/<%=item.id %>" style="color : white">삭제</a></td>
         </tr>
         <% }); %>
     </table>
