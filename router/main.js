@@ -10,6 +10,22 @@ connection.connect();
 
 const bodyParser = require('body-parser');
 
+/*
+function changePartner(rows, i, j){
+    connection.query('UPDATE user SET partner = ' + rows[i].id + ' WHERE id = ' + rows[j].id, function (err, result) {
+        if (err) {
+            console.log('Error while performing query.',err)
+        } else {
+            connection.query('UPDATE user SET matched = 1 WHERE id = ' + rows[i].id, function (err, result) {
+                if (err) {
+                    console.log('Error while performing query.',err)
+                }
+            })
+        }
+    })
+}
+*/
+
 module.exports = function(app)
 {
     app.use(bodyParser.urlencoded({ extended: false}));
@@ -24,24 +40,23 @@ module.exports = function(app)
     });
     app.get('/list',function(req,res){
         connection.query('SELECT * from user', function(err,rows){
-            if(!err){
-                res.render('list.ejs',{data:rows})}
+            if(!err)
+                res.render('list.ejs',{data:rows})
             else
                 console.log('Error while performing query.',err)
         });
     });
-
     app.post('/add', function (req,res) {
         var name = req.body.name
         var age = req.body.age
         var gendor = req.body.gendor
-        var wiwr = req.body.wiwr
+        var wiwl = req.body.wiwl
         var wiwt = req.body.wiwt
         var phone = req.body.phone
 
-        var sql= 'INSERT INTO user (name, age, gendor, WIWR, WIWT, phone) VALUES (?, ?, ?, ?, ?, ?)';
+        var sql= 'INSERT INTO user (name, age, gendor, WIWL, WIWT, phone) VALUES (?, ?, ?, ?, ?, ?)';
 
-        connection.query(sql, [name, parseInt(age), parseInt(gendor), wiwr, wiwt, phone], function (err, result) {
+        connection.query(sql, [name, parseInt(age), parseInt(gendor), wiwl, wiwt, phone], function (err, result) {
             if(err){
                 console.log(err);
                 res.status(500).send('Internal Sever Error');
@@ -56,6 +71,24 @@ module.exports = function(app)
             } else {
                 console.log('delete id = %d', req.params.id);
                 res.redirect('/list');
+            }
+        })
+    })
+    app.get('/partner/:id/:partner', function (req,res) {
+        connection.query('UPDATE user SET partner = ? WHERE id = ?',[req.params.partner,req.params.id], function (err, result) {
+            if (err) {
+                console.log('Error while performing query.',err)
+            } else {
+                console.log('edit id = %d -> partner = %d / step1', req.params.id, req.params.partner);
+
+                connection.query('UPDATE user SET matched = 1 WHERE id = ?',[req.params.id], function (err, result) {
+                    if (err) {
+                        console.log('Error while performing query.',err)
+                    } else {
+                        console.log('edit id = %d -> partner = %d / step2', req.params.id, req.params.partner);
+                        res.redirect('/');
+                    }
+                })
             }
         })
     })
@@ -104,6 +137,48 @@ module.exports = function(app)
         })
     })
     app.get('/control/control3', function (req,res) {
-        console.log('파트너 매칭')
+        /*
+var num = connection.query('SELECT * from user')
+console.log(num)
+
+
+connection.query('SELECT * from user', function (err,num) {
+    if(!err){
+        for (var count = 0; count < num.length; count++)
+        {
+            connection.query('SELECT * from user', function(err,rows){
+                if(!err){
+                    var end = 1
+                    for (var i = 0; i < rows.length; i++) {
+                        if (rows[i].matched == 0 && end == 1) {
+                            for (var j = 0; j < rows.length; j++) {
+                                if (rows[j].matched == 0 && rows[j].WIWT == rows[i].WIWL && rows[j].WIWL == rows[i].WIWT && end == 1) {
+                                    end = 0
+                                    console.log('/partner/' + i + '/' + j)
+                                    changePartner(rows, i, j, function(res){
+                                        end = res
+                                        console.log(i+' '+ j + ' 1')
+                                    })
+                                    end = 0
+                                    changePartner(rows, j, i, function(res){
+                                        end = res
+                                        console.log(i+' '+ j + ' 2')
+                                    })
+                                    break
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                    console.log('Error while performing query.',err)
+            });
+        }
+        res.redirect('/');
+    }
+    else
+        console.log('Error while performing query.',err)
+})
+*/
     })
 }
