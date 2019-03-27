@@ -1,4 +1,6 @@
 var mysql = require('mysql');
+var smysql = require('sync-mysql');
+
 var connection = mysql.createConnection({
     host: 'localhost',
     port: 3306,
@@ -8,23 +10,15 @@ var connection = mysql.createConnection({
 });
 connection.connect();
 
-const bodyParser = require('body-parser');
+var sconnection = new smysql({
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: '0000',
+    database: 'people_db'
+})
 
-/*
-function changePartner(rows, i, j){
-    connection.query('UPDATE user SET partner = ' + rows[i].id + ' WHERE id = ' + rows[j].id, function (err, result) {
-        if (err) {
-            console.log('Error while performing query.',err)
-        } else {
-            connection.query('UPDATE user SET matched = 1 WHERE id = ' + rows[i].id, function (err, result) {
-                if (err) {
-                    console.log('Error while performing query.',err)
-                }
-            })
-        }
-    })
-}
-*/
+const bodyParser = require('body-parser');
 
 module.exports = function(app)
 {
@@ -137,24 +131,38 @@ module.exports = function(app)
         })
     })
     app.get('/control/control3', function (req,res) {
-        /*
-var num = connection.query('SELECT * from user')
-console.log(num)
-
-
-connection.query('SELECT * from user', function (err,num) {
-    if(!err){
+        var num = sconnection.query('SELECT id from user')
+        console.log('클릭')
         for (var count = 0; count < num.length; count++)
         {
-            connection.query('SELECT * from user', function(err,rows){
-                if(!err){
-                    var end = 1
-                    for (var i = 0; i < rows.length; i++) {
-                        if (rows[i].matched == 0 && end == 1) {
-                            for (var j = 0; j < rows.length; j++) {
-                                if (rows[j].matched == 0 && rows[j].WIWT == rows[i].WIWL && rows[j].WIWL == rows[i].WIWT && end == 1) {
-                                    end = 0
-                                    console.log('/partner/' + i + '/' + j)
+            var rows = sconnection.query('SELECT * from user')
+            for (var i = 0; i < rows.length; i++) {
+                if (rows[i].matched == 0) {
+                    for (var j = 0; j < rows.length; j++) {
+                        if (rows[j].matched == 0 && rows[j].WIWT == rows[i].WIWL && rows[j].WIWL == rows[i].WIWT) {
+                            console.log('/partner/' + i + '/' + j)
+                            sconnection.query('UPDATE user SET partner = ' + rows[i].id + ' WHERE id = ' + rows[j].id)
+                            console.log('1')
+                            sconnection.query('UPDATE user SET matched = 1 WHERE id = ' + rows[j].id)
+                            console.log('2')
+                            sconnection.query('UPDATE user SET partner = ' + rows[j].id + ' WHERE id = ' + rows[i].id)
+                            console.log('3')
+                            sconnection.query('UPDATE user SET matched = 1 WHERE id = ' + rows[i].id)
+                            console.log('4')
+                            break
+                        }
+                    }
+                }
+            }
+        }
+
+/*
+
+
+
+
+
+
                                     changePartner(rows, i, j, function(res){
                                         end = res
                                         console.log(i+' '+ j + ' 1')
@@ -165,20 +173,11 @@ connection.query('SELECT * from user', function (err,num) {
                                         console.log(i+' '+ j + ' 2')
                                     })
                                     break
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                    console.log('Error while performing query.',err)
-            });
+
         }
         res.redirect('/');
     }
-    else
-        console.log('Error while performing query.',err)
-})
+
 */
     })
 }
