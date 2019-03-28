@@ -131,53 +131,29 @@ module.exports = function(app)
         })
     })
     app.get('/control/control3', function (req,res) {
-        var num = sconnection.query('SELECT id from user')
-        console.log('클릭')
-        for (var count = 0; count < num.length; count++)
-        {
-            var rows = sconnection.query('SELECT * from user')
-            for (var i = 0; i < rows.length; i++) {
-                if (rows[i].matched == 0) {
-                    for (var j = 0; j < rows.length; j++) {
-                        if (rows[j].matched == 0 && rows[j].WIWT == rows[i].WIWL && rows[j].WIWL == rows[i].WIWT) {
-                            console.log('/partner/' + i + '/' + j)
-                            sconnection.query('UPDATE user SET partner = ' + rows[i].id + ' WHERE id = ' + rows[j].id)
-                            console.log('1')
-                            sconnection.query('UPDATE user SET matched = 1 WHERE id = ' + rows[j].id)
-                            console.log('2')
-                            sconnection.query('UPDATE user SET partner = ' + rows[j].id + ' WHERE id = ' + rows[i].id)
-                            console.log('3')
-                            sconnection.query('UPDATE user SET matched = 1 WHERE id = ' + rows[i].id)
-                            console.log('4')
-                            break
-                        }
+        var num = sconnection.query('SELECT * from user where matched = 0')
+        console.log(num.length)
+        for (var i = 0; i < num.length; i++) {
+            var rows = sconnection.query('SELECT * from user where matched = 0')
+            if (i >= rows.length)
+                break
+            if (rows[i].matched == 0) {
+                for (var j = 0; j < rows.length; j++) {
+                    if (rows[j].matched == 0 && rows[j].WIWT == rows[i].WIWL && rows[j].WIWL == rows[i].WIWT) {
+                        console.log('/partner/' + i + '/' + j)
+                        sconnection.query('UPDATE user SET partner = ' + rows[i].id + ' WHERE id = ' + rows[j].id)
+                        console.log('1')
+                        sconnection.query('UPDATE user SET matched = 1 WHERE id = ' + rows[j].id)
+                        console.log('2')
+                        sconnection.query('UPDATE user SET partner = ' + rows[j].id + ' WHERE id = ' + rows[i].id)
+                        console.log('3')
+                        sconnection.query('UPDATE user SET matched = 1 WHERE id = ' + rows[i].id)
+                        console.log('4')
+                        break
                     }
                 }
             }
         }
-
-/*
-
-
-
-
-
-
-                                    changePartner(rows, i, j, function(res){
-                                        end = res
-                                        console.log(i+' '+ j + ' 1')
-                                    })
-                                    end = 0
-                                    changePartner(rows, j, i, function(res){
-                                        end = res
-                                        console.log(i+' '+ j + ' 2')
-                                    })
-                                    break
-
-        }
         res.redirect('/');
-    }
-
-*/
     })
 }
