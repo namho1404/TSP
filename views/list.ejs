@@ -19,7 +19,6 @@
             <th>Gendor</th>
             <th>WIWL</th>
             <th>WIWT</th>
-            <th>Matched</th>
             <th>Partner</th>
             <th>Phone</th>
             <th>Delete</th>
@@ -32,8 +31,8 @@
             <td><%= item.gendor%></td>
             <td><%= item.WIWL%></td>
             <td><%= item.WIWT%></td>
-            <td><%= item.matched%></td>
-            <td><%= item.partner%></td>
+            <td><% if (item.partner == 0) item.partner = null%>
+                <%= item.partner%></td>
             <td><%= item.phone%></td>
             <td><a href="/delete/<%=item.id %>" style="color : red">삭제</a></td>
         </tr>
